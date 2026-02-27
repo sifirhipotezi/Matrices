@@ -70,7 +70,7 @@
       font: inherit;
     }
 
-    input[type="date"],
+    input[type="text"],
     select {
       width: 100%;
       max-width: 340px;
@@ -100,7 +100,7 @@
 
     .stem-wrap img {
       width: 100%;
-      max-width: 520px;
+      max-width: 560px;
       height: auto;
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -110,8 +110,8 @@
     .options-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(100px, 1fr));
-      gap: 8px;
-      margin-bottom: 8px;
+      gap: 10px;
+      margin-bottom: 10px;
     }
 
     .option-btn {
@@ -137,14 +137,14 @@
       font-weight: 700;
       margin-top: 4px;
       text-align: left;
-      font-size: 1.8rem;
+      font-size: 1.4rem;
       line-height: 1;
       text-align: center;
     }
 
     .option-btn img {
       width: 100%;
-      height: 120px;
+      height: 130px;
       object-fit: contain;
       display: block;
       border: 1px solid var(--border);
@@ -222,17 +222,17 @@
       }
 
       .options-grid {
-        grid-template-columns: repeat(6, minmax(100px, 1fr));
-        gap: 8px;
-        margin-bottom: 8px;
+        grid-template-columns: repeat(6, minmax(120px, 1fr));
+        gap: 10px;
+        margin-bottom: 10px;
       }
 
       .option-btn img {
-        height: 190px;
+        height: 170px;
       }
 
       .option-label {
-        font-size: 2.8rem;
+        font-size: 1.9rem;
       }
 
       .result-grid {
@@ -248,8 +248,8 @@
       <p>Bu testte her soruda eksik parçayı bulmanız istenmektedir. Altı seçenekten doğru olanı seçin.</p>
 
       <div class="form-row">
-        <label for="birthdate">Doğum Tarihi</label>
-        <input id="birthdate" type="date" required />
+        <label for="age-input">Yaşınız</label>
+        <input id="age-input" type="text" inputmode="decimal" placeholder="Yaşınız" required />
       </div>
 
       <div class="form-row">
@@ -312,7 +312,7 @@
     const testScreen = document.getElementById('screen-test');
     const resultScreen = document.getElementById('screen-results');
 
-    const birthdateInput = document.getElementById('birthdate');
+    const ageInput = document.getElementById('age-input');
     const genderInput = document.getElementById('gender');
     const startBtn = document.getElementById('start-btn');
     const landingError = document.getElementById('landing-error');
@@ -334,7 +334,7 @@
     const shareStatus = document.getElementById('share-status');
 
     const state = {
-      birthdate: null,
+      ageInput: null,
       cinsiyet: 'Erkek',
       startTime: null,
       endTime: null,
@@ -371,35 +371,26 @@
       };
     }
 
-    function computeAgeParts(birthdate, refDate = new Date()) {
-      const b = new Date(birthdate + 'T00:00:00');
-      if (Number.isNaN(b.getTime())) {
+    function parseAgeInput(value) {
+      const parsed = Number(String(value).trim().replace(',', '.'));
+      if (!Number.isFinite(parsed) || parsed < 0) {
         return null;
       }
-
-      let years = refDate.getFullYear() - b.getFullYear();
-      let months = refDate.getMonth() - b.getMonth();
-
-      if (refDate.getDate() < b.getDate()) {
-        months -= 1;
-      }
-      if (months < 0) {
-        years -= 1;
-        months += 12;
-      }
-
-      const totalMonths = years * 12 + months;
-      return { years, months, totalMonths };
+      return parsed;
     }
 
-    function getAgeGroup(birthdate) {
-      const age = computeAgeParts(birthdate);
-      if (!age) {
+    function getAgeGroup(ageInYears) {
+      if (ageInYears === null) {
         return null;
       }
 
-      state.ageYears = Math.max(age.years, 0);
-      state.ageMonths = Math.max(age.months, 0);
+      const clampedYears = Math.max(14, ageInYears);
+      const yearsWhole = Math.floor(clampedYears);
+      const monthsFromDecimal = Math.round((clampedYears - yearsWhole) * 12);
+      const normalizedMonths = Math.min(Math.max(monthsFromDecimal, 0), 11);
+
+      state.ageYears = yearsWhole;
+      state.ageMonths = normalizedMonths;
 
       const groupEntries = Object.keys(KBIT2.norms)
         .map(parseAgeGroupKey)
@@ -420,7 +411,7 @@
         ? groupEntries.find(g => normalizeDash(g.key) === maxMeta.normalized)
         : groupEntries[groupEntries.length - 1];
 
-      let totalMonths = age.totalMonths;
+      let totalMonths = yearsWhole * 12 + normalizedMonths;
       if (totalMonths < minGroup.minTotalMonths) {
         totalMonths = minGroup.minTotalMonths;
       }
@@ -613,22 +604,22 @@
     }
 
     function startTest() {
-      const birthdate = birthdateInput.value;
-      if (!birthdate) {
-        landingError.textContent = 'Lütfen doğum tarihi girin.';
+      const ageValue = ageInput.value;
+      if (!ageValue) {
+        landingError.textContent = 'Lütfen yaşınızı girin.';
         return;
       }
 
-      const age = computeAgeParts(birthdate);
-      if (!age) {
-        landingError.textContent = 'Geçerli bir doğum tarihi girin.';
+      const parsedAge = parseAgeInput(ageValue);
+      if (parsedAge === null) {
+        landingError.textContent = 'Geçerli bir yaş girin.';
         return;
       }
 
       landingError.textContent = '';
-      state.birthdate = birthdate;
+      state.ageInput = ageValue;
       state.cinsiyet = genderInput.value;
-      state.ageGroup = getAgeGroup(birthdate);
+      state.ageGroup = getAgeGroup(parsedAge);
 
       if (!state.ageGroup) {
         landingError.textContent = 'Yaş grubu hesaplanamadı.';
