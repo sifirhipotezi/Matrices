@@ -34,6 +34,19 @@
       padding: 16px 14px 28px;
     }
 
+    .app.centered {
+      max-width: 100%;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .app.centered .card {
+      width: min(760px, 100%);
+    }
+
     .card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -242,7 +255,7 @@
   </style>
 </head>
 <body>
-  <main class="app">
+  <main id="app-root" class="app centered">
     <section id="screen-landing" class="card">
       <h1>Görsel Akıl Yürütme Testi</h1>
       <p>Bu testte her soruda eksik parçayı bulmanız istenmektedir. Altı seçenekten doğru olanı seçin.</p>
@@ -308,6 +321,7 @@
     const TOTAL_ITEMS = ITEM_END - ITEM_START + 1;
     const BASAL = 13;
 
+    const appRoot = document.getElementById('app-root');
     const landingScreen = document.getElementById('screen-landing');
     const testScreen = document.getElementById('screen-test');
     const resultScreen = document.getElementById('screen-results');
@@ -628,6 +642,7 @@
 
       landingScreen.classList.add('hidden');
       testScreen.classList.remove('hidden');
+      appRoot.classList.remove('centered');
       renderItem();
     }
 
