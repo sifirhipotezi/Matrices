@@ -93,14 +93,20 @@
       margin-bottom: 12px;
     }
 
+    .test-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
     .stem-wrap {
       text-align: center;
-      margin-bottom: 16px;
     }
 
     .stem-wrap img {
       width: 100%;
-      max-width: 500px;
+      max-width: 430px;
       height: auto;
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -109,16 +115,16 @@
 
     .options-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(100px, 1fr));
-      gap: 12px;
-      margin-bottom: 16px;
+      grid-template-columns: repeat(2, minmax(100px, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
     }
 
     .option-btn {
       border: 2px solid var(--border);
-      border-radius: 10px;
+      border-radius: 8px;
       background: #fff;
-      padding: 8px;
+      padding: 6px;
       cursor: pointer;
       transition: border-color 0.15s ease, background-color 0.15s ease;
       color: var(--text);
@@ -135,13 +141,14 @@
 
     .option-label {
       font-weight: 700;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       text-align: left;
+      font-size: 0.9rem;
     }
 
     .option-btn img {
       width: 100%;
-      min-height: 100px;
+      height: 92px;
       object-fit: contain;
       display: block;
     }
@@ -216,8 +223,24 @@
         padding: 24px;
       }
 
+      .test-layout {
+        grid-template-columns: minmax(280px, 430px) minmax(320px, 1fr);
+        gap: 16px;
+      }
+
+      .stem-wrap {
+        position: sticky;
+        top: 12px;
+      }
+
       .options-grid {
-        grid-template-columns: repeat(2, minmax(100px, 1fr));
+        grid-template-columns: repeat(3, minmax(100px, 1fr));
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .option-btn img {
+        height: 86px;
       }
 
       .result-grid {
@@ -256,10 +279,14 @@
 
     <section id="screen-test" class="card hidden">
       <div id="progress" class="progress">Soru 1 / 37</div>
-      <div class="stem-wrap">
-        <img id="stem-img" alt="Soru görseli" />
+      <div class="test-layout">
+        <div class="stem-wrap">
+          <img id="stem-img" alt="Soru görseli" />
+        </div>
+        <div>
+          <div id="options-grid" class="options-grid"></div>
+        </div>
       </div>
-      <div id="options-grid" class="options-grid"></div>
       <div class="actions">
         <button id="next-btn" class="primary" type="button" disabled>İleri</button>
       </div>
